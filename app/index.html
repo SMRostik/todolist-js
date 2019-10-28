@@ -7,8 +7,51 @@
 	<link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-	
-	<script src="js/libs.min.js"></script>
+	<header class="header">
+		<div class="header__title"><span>TODOList</span></div>
+	</header>
+	<main class="wrap">
+		<div class="panel">
+			<input type="search" class="panel__search">
+			<select name="" id="" class="choose panel__choose">
+				<option value="1" class="choose__item">all</option>
+				<option value="2" class="choose__item">open</option>
+				<option value="3" class="choose__item">done</option>
+			</select>
+			<select name="" id="" class="choose panel__choose">
+				<option value="1" class="choose__item">all</option>
+				<option value="2" class="choose__item">low</option>
+				<option value="3" class="choose__item">normal</option>
+				<option value="4" class="choose__item">high</option>
+			</select>
+			<button class="js-create-btn">Create</button>
+		</div>
+		<div class="content">
+			<div class="content__item">
+				<div class="content__title">Title</div>
+				<div class="content__desctiption">Desc</div>
+			</div>
+			<div class="content__item">
+				<div class="content__title">Title</div>
+				<div class="content__desctiption">Desc</div>
+			</div>
+		</div>
+		<div class="modal js-modal modal_display">
+			<div class="modal__body">
+				<label for="title">Title:</label>
+				<input class="modal__input" type="text" name="title" id="title">
+				<label for="description">Desctiption:</label>
+				<textarea class="modal__input" name="" id="description" cols="30" rows="5"></textarea>
+				<button class="js-cancel-btn">Cancel</button>
+				<button class="js-save-btn">Save</button>
+			</div>
+		</div>
+	</main>
+	<footer class="footer">
+		<div class="footer__title"><span>Rostyslav Symonenko</span></div>
+	</footer>
+
+	<!-- <script src="js/libs.min.js"></script> -->
 	<script src="js/common.js"></script>
 </body>
 </html>
