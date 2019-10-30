@@ -12,8 +12,26 @@
 	</header>
 	<main class="wrap">
 		<div class="panel">
+			
 			<input type="search" class="panel__search">
-			<select name="" id="" class="choose panel__choose">
+			<div id="status_work" class="select">
+				<button data-value="0" class="select__btn">ALL</button>
+				<ul class="select__body">
+					<li data-value="0" class="select__item">All</li>
+					<li data-value="1" class="select__item">Open</li>
+					<li data-value="2" class="select__item">Done</li>
+				</ul>
+			</div>
+			<div id="status_priority" class="select">
+				<button data-value="0" class="select__btn">ALL</button>
+				<ul class="select__body">
+					<li data-value="-1" class="select__item">All</li>
+					<li data-value="0" class="select__item">High</li>
+					<li data-value="1" class="select__item">Normal</li>
+					<li data-value="2" class="select__item">Low</li>
+				</ul>
+			</div>
+			<!-- <select name="" id="" class="choose panel__choose">
 				<option value="1" class="choose__item">all</option>
 				<option value="2" class="choose__item">open</option>
 				<option value="3" class="choose__item">done</option>
@@ -23,11 +41,11 @@
 				<option value="2" class="choose__item">low</option>
 				<option value="3" class="choose__item">normal</option>
 				<option value="4" class="choose__item">high</option>
-			</select>
+			</select> -->
 			<button class="js-create-btn">Create</button>
 		</div>
 		<div class="content">
-			<div class="content__item">
+			<div class="content__item content__item_done">
 				<div class="content__title">Title</div>
 				<div class="content__desctiption">Desc</div>
 			</div>
@@ -42,6 +60,14 @@
 				<input class="modal__input" type="text" name="title" id="title">
 				<label for="description">Desctiption:</label>
 				<textarea class="modal__input" name="" id="description" cols="30" rows="5"></textarea>
+				<div id="modal_select" class="select">
+					<button id="priority" data-value="0" class="select__btn">ALL</button>
+					<ul class="select__body">
+						<li data-value="0" class="select__item">High</li>
+						<li data-value="1" class="select__item">Normal</li>
+						<li data-value="2" class="select__item">Low</li>
+					</ul>
+				</div>
 				<button class="js-cancel-btn">Cancel</button>
 				<button class="js-save-btn">Save</button>
 			</div>
@@ -51,6 +77,9 @@
 		<div class="footer__title"><span>Rostyslav Symonenko</span></div>
 	</footer>
 
+	<script>
+	
+	</script>
 	<!-- <script src="js/libs.min.js"></script> -->
 	<script src="js/common.js"></script>
 </body>
