@@ -22,6 +22,7 @@
 				this.sel.querySelector(".select__btn").innerHTML = e.target.textContent || e.target.innerText;//txt;
 				this.sel.querySelector(".select__body").classList.toggle("select__body_active");
 				//this._filter(e.target.getAttribute('data-value'));
+				this.current_option = e.target.getAttribute('data-value');
 				this._selectElem();
 			}
 			_filter(value){}
@@ -59,6 +60,37 @@
 			}
 			_filter(value){
 				console.log(value);
+			}
+		}
+
+		class ToolSearch{
+			constructor(context, id){
+				this.sel = document.querySelector(id);
+				this.context = context;
+				this.searchText = "";
+
+				this._addEventSearch = this._addEventSearch.bind(this);
+				this.sel.addEventListener("keyup", this._addEventSearch);
+			}
+			_addEventSearch(){
+				this.updateValue();
+				this.context.showPosts();
+			}
+			updateValue(){
+				this.searchText = this.sel.value;
+				console.log(this.searchText);
+			}
+			search(data){
+				let arr = [];
+				for(let key in data){
+					if(data[key]["title"].toLowerCase().indexOf(this.searchText.toLowerCase()) != -1){
+						arr.push(key);
+					}
+				}
+				console.log("----arr----");
+				console.log(arr);
+				console.log("===arr===");
+				return arr;
 			}
 		}
 
@@ -106,7 +138,7 @@
 				for(let key in data){
 					done_status = data[key]['done_status'] == 1? " content__item_done": "";
 					content.innerHTML += `
-					<div class="content__item${done_status}">
+					<div data-id="${key}" class="content__item${done_status}">
 						<div class="content__title">${data[key]['title']}</div>
 						<div class="content__desctiption">${data[key]['description']}</div>
 						<div>${data[key]['priority_text']}</div>
@@ -132,6 +164,8 @@
 				this.modal_select = new ToolPanelElement(this, "#modal_select", {0: "All1", 1: "High", 2: "Normal", 3: "Low"});
 				this.status_work = new ToolPanelElement(this, "#status_work", {0: "All2", 1: "Open", 2: "Done"});
 				this.status_priority = new ToolPanelElement(this, "#status_priority", {0: "All3", 1: "High", 2: "Normal", 3: "Low"});
+
+				this.search = new ToolSearch(this, "#search");
 			}
 
 			addPost(data) {
@@ -142,25 +176,33 @@
 
 			showPosts() {
 				let data = this.model.getPosts();
+				console.log("data:")
 				console.log(data);
 				let newData = [];
+				console.log(this.status_work.current_option);
+				console.log(this.status_priority.current_option)
 				for(let key in data){
-					console.log(data[key]);
-					if(!this.status_work.current_option 
-						|| !this.status_priority.current_option 
-						|| data[key]["done_status"] == this.status_work.current_option 
-						|| data[key]["priority"] == this.status_priority.current_option){
+					//console.log(data[key]);
+					if((this.status_work.current_option == 0 || data[key]["done_status"] == this.status_work.current_option)
+					&& (this.status_priority.current_option == 0 || data[key]["priority"] == this.status_priority.current_option) && (this.search.search(data).indexOf(key) != -1)){
 						newData[key] = data[key];
 					}
 				}
+				console.log("NewData:")				
 				console.log(newData);
 				this.view.showPosts(this.content, newData);
 			}
+			updateSearsh(){
+				this.search.updateValue();
+			}
+
+
 		}
 
 		const modal = document.querySelector(".js-modal");
 		const create_btn = document.querySelector(".js-create-btn");
 		const modal_save = document.querySelector(".js-save-btn");
+		const search = document.querySelector("#search");
 		
 		const data = [];
 
@@ -191,6 +233,7 @@
 			document.querySelector("#description").value = "";
 			contrPost.showPosts();
 		});
+
 
 
 		
