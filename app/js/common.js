@@ -109,6 +109,11 @@
 				return data;
 				//return localStorage.getItem(this.key) != null? JSON.parse(localStorage.getItem(this.key)): [];
 			}
+			delPost(idPost){
+				let posts = this.getPosts();
+				posts.splice(idPost, 1);
+				localStorage.setItem(this.key, JSON.stringify(posts));
+			}
 
 			addPost(data) {
 				let posts = this.getPosts();
@@ -136,12 +141,26 @@
 				content.innerHTML = "";
 				let done_status;
 				for(let key in data){
-					done_status = data[key]['done_status'] == 1? " content__item_done": "";
+					done_status = data[key]['done_status'] == 2? " content__item_done": "";
 					content.innerHTML += `
-					<div data-id="${key}" class="content__item${done_status}">
+					<div class="content__item${done_status}">
 						<div class="content__title">${data[key]['title']}</div>
 						<div class="content__desctiption">${data[key]['description']}</div>
-						<div>${data[key]['priority_text']}</div>
+						<div class="down-panel content__down-panel">
+							<div class="down-panel__left">
+								<div class="down-panel__priorot">${data[key]['priority_text']}</div>
+							</div>
+							<div class="down-panel__right">
+								<div class="action down-panel__action">
+									<button class="action__btn">...</button>
+									<ul data-post-id="${key}" class="action__body">
+										<li class="action__done">Done</li>
+										<li class="action__edit">Edit</li>
+										<li class="action__delete">Delete</li>
+									</ul>
+								</div>
+							</div>
+						</div>
 					</div>`;
 				}
 			}
@@ -195,6 +214,10 @@
 			updateSearsh(){
 				this.search.updateValue();
 			}
+			delPost(idPost){
+				this.model.delPost(idPost);
+				this.showPosts();
+			}
 
 
 		}
@@ -234,7 +257,17 @@
 			contrPost.showPosts();
 		});
 
-
+		document.addEventListener("click", function(e){
+			if(e.target.classList == "action__done"){
+				console.log('done');
+				console.log(e.target.parentNode.getAttribute("data-post-id"));
+			} else if(e.target.classList == "action__edit"){
+				console.log('edit');
+			} else if(e.target.classList == "action__delete"){
+				console.log('delete');
+				contrPost.delPost(e.target.parentNode.getAttribute("data-post-id"));
+			}
+		});
 
 		
 
