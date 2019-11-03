@@ -2,7 +2,6 @@
 
 	window.onload = function() {
 		class ToolPanelElement{
-			//this.current_option;
 			constructor(context, id, options){
 				this.sel = document.querySelector(id);
 				this.options = options;
@@ -18,8 +17,7 @@
 
 			_addEventBody(e){
 				this.sel.querySelector(".select__btn").setAttribute("data-value", e.target.getAttribute('data-value'));
-				//let txt = e.target.textContent || e.target.innerText;
-				this.sel.querySelector(".select__btn").innerHTML = e.target.textContent || e.target.innerText;//txt;
+				this.sel.querySelector(".select__btn").innerHTML = e.target.textContent || e.target.innerText;
 				this.sel.querySelector(".select__body").classList.toggle("select__body_active");
 				//this._filter(e.target.getAttribute('data-value'));
 				this.current_option = e.target.getAttribute('data-value');
@@ -59,7 +57,6 @@
 				this.contrl = controller;
 			}
 			_filter(value){
-				console.log(value);
 			}
 		}
 
@@ -78,7 +75,6 @@
 			}
 			updateValue(){
 				this.searchText = this.sel.value;
-				console.log(this.searchText);
 			}
 			search(data){
 				let arr = [];
@@ -87,13 +83,77 @@
 						arr.push(key);
 					}
 				}
-				console.log("----arr----");
-				console.log(arr);
-				console.log("===arr===");
 				return arr;
 			}
 		}
+		class ToolModal{
+			constructor(context, id){
+				this.context = context;
+				this.sel = document.querySelector(id);
 
+				
+				
+			}
+
+			enable(){
+				this.sel.classList.remove("modal_display");
+				this.sel.querySelector(".js-save-btn").addEventListener("click", this.post);
+			}
+
+			disable(){
+				this.sel.classList.add("modal_display");
+				this.sel.querySelector(".js-save-btn").removeEventListener("click", this.post);
+			}
+		}
+		class ToolModalChange extends ToolModal{
+			constructor(context, id){
+				super(context, id);
+				this.post = this.post.bind(this);
+				this.disable = this.disable.bind(this);
+				this.sel.querySelector(".js-cancel-btn").addEventListener("click", this.disable);
+				
+				this.enable = this.enable.bind(this);
+			}
+			post(){
+				let data = {
+					'title': this.sel.querySelector(".title").value,
+					'description': this.sel.querySelector(".description").value,
+					'priority': this.sel.querySelector(".select__btn").getAttribute("data-value"),
+					'done_status': 1
+				};
+				this.context.changePostById(this.postId, data);
+				this.disable();
+				this.context.showPosts();
+			}
+			setPostId(id){
+				this.postId = id;
+			};
+		}
+		class ToolModalCreate extends ToolModal{
+			constructor(context, id, button){
+				super(context, id);
+
+				this.post = this.post.bind(this);
+				this.disable = this.disable.bind(this);
+				this.sel.querySelector(".js-cancel-btn").addEventListener("click", this.disable);
+				
+				this.enable = this.enable.bind(this);
+				this.button = document.querySelector(button);
+				this.button.addEventListener("click", this.enable);
+			}
+
+			post(){
+				let data = {
+					'title': this.sel.querySelector(".title").value,
+					'description': this.sel.querySelector(".description").value,
+					'priority': this.sel.querySelector(".select__btn").getAttribute("data-value"),
+					'done_status': 1
+				};
+				this.context.addPost(data);
+				this.disable();
+				this.context.showPosts();
+			}
+		}
 		class ModelPost {
 			constructor(key) {
 				this.key = key;
@@ -114,7 +174,11 @@
 				posts.splice(idPost, 1);
 				localStorage.setItem(this.key, JSON.stringify(posts));
 			}
-
+			changeWorkStatus(idPost, value){
+				let posts = this.getPosts();
+				posts[idPost]["done_status"] = value;
+				localStorage.setItem(this.key, JSON.stringify(posts));
+			}
 			addPost(data) {
 				let posts = this.getPosts();
 				posts.push(data);
@@ -133,6 +197,16 @@
 					default:
 						return "";
 				}
+			}
+			changePostById(id, data){
+				let posts = this.getPosts();
+				posts[id] = {
+					'title': data['title'],
+					'description': data['description'],
+					'priority': data['priority'],
+					'done_status': 1
+				};
+				localStorage.setItem(this.key, JSON.stringify(posts));
 			}
 		}
 
@@ -185,21 +259,22 @@
 				this.status_priority = new ToolPanelElement(this, "#status_priority", {0: "All3", 1: "High", 2: "Normal", 3: "Low"});
 
 				this.search = new ToolSearch(this, "#search");
+
+				this.toolModal = new ToolModalCreate(this, "#modal", ".js-create-btn");
+				this.toolModalChange = new ToolModalChange(this, "#modal");
+
 			}
 
 			addPost(data) {
-				console.log(this.model.getPosts());
 				this.model.addPost(data);
-				console.log(this.model.getPosts());
 			}
 
 			showPosts() {
 				let data = this.model.getPosts();
-				console.log("data:")
+				console.log("___showPost___");
 				console.log(data);
+				console.log("==============")
 				let newData = [];
-				console.log(this.status_work.current_option);
-				console.log(this.status_priority.current_option)
 				for(let key in data){
 					//console.log(data[key]);
 					if((this.status_work.current_option == 0 || data[key]["done_status"] == this.status_work.current_option)
@@ -207,8 +282,6 @@
 						newData[key] = data[key];
 					}
 				}
-				console.log("NewData:")				
-				console.log(newData);
 				this.view.showPosts(this.content, newData);
 			}
 			updateSearsh(){
@@ -218,95 +291,34 @@
 				this.model.delPost(idPost);
 				this.showPosts();
 			}
+			changeWorkStatus(idPost, value){
+				this.model.changeWorkStatus(idPost, value);
+				this.showPosts();
+			}
+			changePost(id){
+				this.toolModalChange.setPostId(id);
 
-
+				this.toolModalChange.enable();
+			}
+			changePostById(id, data){
+				this.model.changePostById(id, data);
+			}
 		}
-
-		const modal = document.querySelector(".js-modal");
-		const create_btn = document.querySelector(".js-create-btn");
-		const modal_save = document.querySelector(".js-save-btn");
-		const search = document.querySelector("#search");
-		
-		const data = [];
 
 		const contrPost = new ControllerPost(new ModelPost("posts"), new ViewPost);
 		contrPost.showPosts();
 
-		create_btn.addEventListener("click", function(){
-			modal.classList.remove("modal_display");
-		});
-		
-		modal.querySelector(".js-cancel-btn").addEventListener("click", function(){
-			modal.classList.add("modal_display");
-			document.querySelector("#title").value = "";
-			document.querySelector("#description").value = "";
-		});
-
-		modal_save.addEventListener("click", function(e){
-			e.preventDefault();
-			console.log("ms el");
-			contrPost.addPost({
-					"title": document.querySelector("#title").value,
-					"description": document.querySelector("#description").value,
-					"priority": document.querySelector("#modal_select .select__btn").getAttribute('data-value'),
-					"done_status": 1
-				});
-			modal.classList.add("modal_display");
-			document.querySelector("#title").value = "";
-			document.querySelector("#description").value = "";
-			contrPost.showPosts();
-		});
-
 		document.addEventListener("click", function(e){
+			contrPost.showPosts();
+			let id = e.target.parentNode.getAttribute("data-post-id");
 			if(e.target.classList == "action__done"){
-				console.log('done');
-				console.log(e.target.parentNode.getAttribute("data-post-id"));
+				contrPost.changeWorkStatus(id, 2);
 			} else if(e.target.classList == "action__edit"){
-				console.log('edit');
+				contrPost.changePost(e.target.parentNode.getAttribute("data-post-id"));
 			} else if(e.target.classList == "action__delete"){
-				console.log('delete');
-				contrPost.delPost(e.target.parentNode.getAttribute("data-post-id"));
+				contrPost.delPost(id);
 			}
 		});
-
-		
-
-		// new ToolPanelElement("#modal_select", {0: "All1", 1: "High", 2: "Normal", 3: "Low"}).display();
-		// new ToolPanelElement("#status_work", {0: "All2", 1: "Open", 2: "Done"}).display();
-		// new ToolPanelElement("#status_priority", {0: "All3", 1: "High", 2: "Normal", 3: "Low"}).display();
-		// var sel = document.querySelector("#modal_select");
-		// sel.querySelector(".select__btn").addEventListener("click", function(){
-		// 	sel.querySelector(".select__body").classList.toggle("select__body_active");
-		// });
-		// sel.querySelector(".select__body").addEventListener("click", function(e){
-		// 	sel.querySelector(".select__btn").setAttribute("data-value", e.target.getAttribute('data-value'));
-		// 	var txt = e.target.textContent || e.target.innerText;
-		// 	sel.querySelector(".select__btn").innerHTML = txt;
-		// 	this.classList.toggle("select__body_active");
-		// });
-
-		// var status_work = document.querySelector("#status_work");
-		// status_work.querySelector(".select__btn").addEventListener("click", function(){
-		// 	status_work.querySelector(".select__body").classList.toggle("select__body_active");
-		// });
-		// status_work.querySelector(".select__body").addEventListener("click", function(e){
-		// 	status_work.querySelector(".select__btn").setAttribute("data-value", e.target.getAttribute('data-value'));
-		// 	var txt = e.target.textContent || e.target.innerText;
-		// 	status_work.querySelector(".select__btn").innerHTML = txt;
-		// 	this.classList.toggle("select__body_active");
-		// });
-
-		
-		// var status_priority = document.querySelector("#status_priority");
-		// status_priority.querySelector(".select__btn").addEventListener("click", function(){
-		// 	status_priority.querySelector(".select__body").classList.toggle("select__body_active");
-		// });
-		// status_priority.querySelector(".select__body").addEventListener("click", function(e){
-		// 	status_priority.querySelector(".select__btn").setAttribute("data-value", e.target.getAttribute('data-value'));
-		// 	var txt = e.target.textContent || e.target.innerText;
-		// 	status_priority.querySelector(".select__btn").innerHTML = txt;
-		// 	this.classList.toggle("select__body_active");
-		// });
 	}
 		
 }());
