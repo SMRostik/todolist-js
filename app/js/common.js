@@ -36,7 +36,7 @@
 			}
 			display(){
 				this.sel.innerHTML = `<button data-value="${this._getFirstOptionKey()}" class="select__btn">${this.getNameOption(this._getFirstOptionKey())}</button>`;
-				let body = `<ul class="select__body">`;
+				let body = `<ul class="select__body modal__sel-body">`;
 				for(let key in this.options){
 					body += `
 					<li data-value="${key}" class="select__item">${this.options[key]}</li>`;
@@ -51,14 +51,14 @@
 			}
 		}
 
-		class ToolPanelElementWork extends ToolPanelElement{
-			constructor(id, controller){
-				super(id);
-				this.contrl = controller;
-			}
-			_filter(value){
-			}
-		}
+		// class ToolPanelElementWork extends ToolPanelElement{
+		// 	constructor(id, controller){
+		// 		super(id);
+		// 		this.contrl = controller;
+		// 	}
+		// 	_filter(value){
+		// 	}
+		// }
 
 		class ToolSearch{
 			constructor(context, id){
@@ -90,9 +90,6 @@
 			constructor(context, id){
 				this.context = context;
 				this.sel = document.querySelector(id);
-
-				
-				
 			}
 
 			enable(){
@@ -103,6 +100,8 @@
 			disable(){
 				this.sel.classList.add("modal_display");
 				this.sel.querySelector(".js-save-btn").removeEventListener("click", this.post);
+				this.sel.querySelector(".title").value = "";
+				this.sel.querySelector(".description").value = "";
 			}
 		}
 		class ToolModalChange extends ToolModal{
@@ -113,6 +112,12 @@
 				this.sel.querySelector(".js-cancel-btn").addEventListener("click", this.disable);
 				
 				this.enable = this.enable.bind(this);
+			}
+			enable(data){
+				this.sel.classList.remove("modal_display");
+				this.sel.querySelector(".js-save-btn").addEventListener("click", this.post);
+				this.sel.querySelector(".title").value = data['title'];
+				this.sel.querySelector(".description").value = data['description'];
 			}
 			post(){
 				let data = {
@@ -169,6 +174,10 @@
 				return data;
 				//return localStorage.getItem(this.key) != null? JSON.parse(localStorage.getItem(this.key)): [];
 			}
+			getPostById(id){
+				let data = this.getPosts();
+				return data[id];
+			}
 			delPost(idPost){
 				let posts = this.getPosts();
 				posts.splice(idPost, 1);
@@ -219,7 +228,7 @@
 					content.innerHTML += `
 					<div class="content__item${done_status}">
 						<div class="content__title">${data[key]['title']}</div>
-						<div class="content__desctiption">${data[key]['description']}</div>
+						<div class="content__description">${data[key]['description']}</div>
 						<div class="down-panel content__down-panel">
 							<div class="down-panel__left">
 								<div class="down-panel__priorot">${data[key]['priority_text']}</div>
@@ -228,9 +237,9 @@
 								<div class="action down-panel__action">
 									<button class="action__btn">...</button>
 									<ul data-post-id="${key}" class="action__body">
-										<li class="action__done">Done</li>
-										<li class="action__edit">Edit</li>
-										<li class="action__delete">Delete</li>
+										<li class="action__item action__done">Done</li>
+										<li class="action__item action__edit">Edit</li>
+										<li class="action__item action__delete">Delete</li>
 									</ul>
 								</div>
 							</div>
@@ -243,7 +252,7 @@
 				content.innerHTML += `
 				<div class="content__item">
 					<div class="content__title">${data['title']}</div>
-					<div class="content__desctiption">${data['description']}</div>
+					<div class="content__description">${data['description']}</div>
 				</div>`;
 			}
 		}
@@ -254,15 +263,14 @@
 				this.view = view;
 				this.content = document.querySelector(".content");
 
-				this.modal_select = new ToolPanelElement(this, "#modal_select", {0: "All1", 1: "High", 2: "Normal", 3: "Low"});
-				this.status_work = new ToolPanelElement(this, "#status_work", {0: "All2", 1: "Open", 2: "Done"});
-				this.status_priority = new ToolPanelElement(this, "#status_priority", {0: "All3", 1: "High", 2: "Normal", 3: "Low"});
+				this.modal_select = new ToolPanelElement(this, "#modal_select", {1: "High", 2: "Normal", 3: "Low"});
+				this.status_work = new ToolPanelElement(this, "#status_work", {0: "All", 1: "Open", 2: "Done"});
+				this.status_priority = new ToolPanelElement(this, "#status_priority", {0: "All", 1: "High", 2: "Normal", 3: "Low"});
 
 				this.search = new ToolSearch(this, "#search");
 
 				this.toolModal = new ToolModalCreate(this, "#modal", ".js-create-btn");
 				this.toolModalChange = new ToolModalChange(this, "#modal");
-
 			}
 
 			addPost(data) {
@@ -271,12 +279,8 @@
 
 			showPosts() {
 				let data = this.model.getPosts();
-				console.log("___showPost___");
-				console.log(data);
-				console.log("==============")
 				let newData = [];
 				for(let key in data){
-					//console.log(data[key]);
 					if((this.status_work.current_option == 0 || data[key]["done_status"] == this.status_work.current_option)
 					&& (this.status_priority.current_option == 0 || data[key]["priority"] == this.status_priority.current_option) && (this.search.search(data).indexOf(key) != -1)){
 						newData[key] = data[key];
@@ -298,7 +302,7 @@
 			changePost(id){
 				this.toolModalChange.setPostId(id);
 
-				this.toolModalChange.enable();
+				this.toolModalChange.enable(this.model.getPostById(id));
 			}
 			changePostById(id, data){
 				this.model.changePostById(id, data);
@@ -309,14 +313,15 @@
 		contrPost.showPosts();
 
 		document.addEventListener("click", function(e){
-			contrPost.showPosts();
 			let id = e.target.parentNode.getAttribute("data-post-id");
-			if(e.target.classList == "action__done"){
+			if(e.target.classList.contains('action__done')){
 				contrPost.changeWorkStatus(id, 2);
-			} else if(e.target.classList == "action__edit"){
+			} else if(e.target.classList.contains('action__edit')){
 				contrPost.changePost(e.target.parentNode.getAttribute("data-post-id"));
-			} else if(e.target.classList == "action__delete"){
+			} else if(e.target.classList.contains('action__delete')){
 				contrPost.delPost(id);
+			} else if(e.target.classList.contains('action__btn')){
+				e.target.parentNode.querySelector('.action__body').classList.toggle("action__body_active");//.classList.add("action__body_active");
 			}
 		});
 	}

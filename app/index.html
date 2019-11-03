@@ -13,7 +13,7 @@
 	<main class="wrap">
 		<div class="panel">
 			
-			<input id="search" type="search" class="panel__search">
+			<input class="search panel__item" id="search" type="text" class="panel__search">
 			<div id="status_work" class="select">
 				<!-- <button data-value="0" class="select__btn">ALL</button>
 				<ul class="select__body">
@@ -22,7 +22,7 @@
 					<li data-value="2" class="select__item">Done</li>
 				</ul> -->
 			</div>
-			<div id="status_priority" class="select">
+			<div id="status_priority" class="select panel__item">
 				<!-- <button data-value="0" class="select__btn">ALL</button>
 				<ul class="select__body">
 					<li data-value="-1" class="select__item">All</li>
@@ -42,25 +42,25 @@
 				<option value="3" class="choose__item">normal</option>
 				<option value="4" class="choose__item">high</option>
 			</select> -->
-			<button class="js-create-btn">Create</button>
+			<button class="create-btn js-create-btn  panel__item">Create</button>
 		</div>
 		<div class="content">
 			<div class="content__item content__item_done">
 				<div class="content__title">Title</div>
-				<div class="content__desctiption">Desc</div>
+				<div class="content__description">Desc</div>
 				<div class="down-panel content__down-panel">
 					<div class="down-panel__left">
-						<div class="down-panel__priorot"></div>
+					<div class="down-panel__priority">Low</div>
 					</div>
 					<div class="down-panel__right">
-						<div class="action down-panel__action">
-							<button class="action__btn">...</button>
-							<ul data-post-id="" class="action__body">
-								<li class="action__done">Done</li>
-								<li class="action__edit">Edit</li>
-								<li class="action__delete">Delete</li>
-							</ul>
-						</div>
+					<div class="action down-panel__action">
+						<button class="action__btn">...</button>
+						<ul data-post-id="" class="action__body">
+							<li class="action__item action__done">Done</li>
+							<li class="action__item action__edit">Edit</li>
+							<li class="action__item action__delete">Delete</li>
+						</ul>
+					</div>
 					</div>
 				</div>
 			</div>
@@ -75,9 +75,9 @@
 				<input class="modal__input title" type="text" name="title" id="title">
 				<label for="description">Desctiption:</label>
 				<textarea class="modal__input description" name="" id="description" cols="30" rows="5"></textarea>
-				<div id="modal_select" class="select">
+				<div id="modal_select" class="select modal__select">
 					<button id="priority" data-value="0" class="select__btn">ALL</button>
-					<ul class="select__body">
+					<ul class="select__body modal__sel-body">
 						<li data-value="0" class="select__item">High</li>
 						<li data-value="1" class="select__item">Normal</li>
 						<li data-value="2" class="select__item">Low</li>

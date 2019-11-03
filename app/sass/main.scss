@@ -4,7 +4,9 @@
 html{
 	height: 100%;
 }
-
+*, *::after, *::before{
+	box-sizing: border-box;
+}
 body{
 	font-size: 16px;
 	min-width: 320px;
@@ -12,6 +14,8 @@ body{
 	display: flex;
 	flex-direction: column;
 	min-height: 100%;
+	font-family: "Montserrat", sans-serif;
+    font-weight: 400;
 }
 
 .header{
@@ -26,17 +30,31 @@ body{
 	width: 100%;
 	margin: 0 auto;
 	position: relative;
+	width: 960px;
+	max-width: 960px;
+}
+.search{
+	flex-grow: 1;
 }
 .panel{
+	padding-top: 15px;
+	padding-bottom: 15px;
+	display: flex;
+	justify-content: space-between;
 	//text-align: center;
+	&__item{
+		margin-left: 15px;
+		margin-right: 15px;
+	}
 }
 .select{
-	display: block;
-	background: #eff;
 	cursor: default;
+	position: relative;
+	flex-grow: 1;
 	&__btn{
 		display: block;
 		width: 100%;
+		height: 100%;
 		text-align: left;
 		background: none;
 		border: 1px solid #000;
@@ -44,16 +62,19 @@ body{
 		margin: 0;
 	}
 	&__body{
+		position: absolute;
 		list-style: none;
 		padding: 0;
 		margin: 0;
-		height: 0;
-		background: #fef;
+		width: 100%;
+		display: none;
 		overflow: hidden;
 		border: 1px solid #000;
+		background: #fff;
 		border-top: none;
+		z-index: 1;
 		&_active{
-			height: auto;
+			display: block;
 		}
 	}
 	&__item{
@@ -64,16 +85,85 @@ body{
 		}
 	}
 }
+.create-btn{
+	background: none;
+	border: 1px solid #000;
+	margin: 0;
+	padding: 5px;
+	flex-grow: 1;
+	border-radius: 50px;
+}
 .content{
 	display: flex;
 	flex-wrap: wrap;
 	&__item{
-		width: 300px;
+		width: 290px;
 		border: #000 1px solid;
 		margin: 15px;
-		padding: 15px;
+		padding: 30px 15px;
+		display: flex;
+		flex-direction: column;
 		&_done{
 			background: #faa;
+		}
+	}
+	&__title{
+		padding-bottom: 30px;
+	}
+	&__description{
+		padding-bottom: 30px;
+		flex-grow: 1;
+	}
+}
+.down-panel{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	&__priority{
+		padding: 5px 15px;
+		border: 2px #000 dashed;
+		border-radius: 10px;
+	}
+	
+}
+.action{
+	position: relative;
+	&__body{
+		position: absolute;
+		list-style: none;
+		background: rgb(255,255,255);
+		border: 1px #000 solid;
+		padding: 0;
+		top: 45px;
+		right: 0;
+		margin: 0;
+		display: none;
+		&_active{
+			display: block;
+		}
+		&::before{
+			content: "";
+			position: absolute;
+			border: 15px #000 solid;
+			border-left: 10px transparent solid;
+			border-right: 10px transparent solid;
+			border-top: 0px transparent solid;
+			right: 7px;
+			top: -15px;
+		}
+	}
+	&__btn{
+		padding: 5px 10px;
+		border: 2px #000 solid;
+		background: none;
+		border-radius: 10px;
+	}
+	&__item{
+		padding: 5px 15px;
+		border: 1px #000 solid;
+		background: #ccc;
+		&:hover{
+			background: #fff;
 		}
 	}
 }
@@ -87,9 +177,11 @@ body{
 	&_display{
 		display: none;
 	}
+	&__select{
+		display: block;
+	}
 	&__body{
 		width: 300px;
-		box-sizing: border-box;
 		margin: 0 auto;
 		border: #000 1px solid;
 		background: #fff;
@@ -97,12 +189,14 @@ body{
 	}
 	&__input{
 		display: block;
-		box-sizing: border-box;
 		width: 100%;
 		border: 0;
 		border: #000 1px solid;
 		padding: 0;
 	}
+}
+#modal .modal__sel-body{
+	position: relative;
 }
 .footer{
 	border-top: 1px solid #000;
