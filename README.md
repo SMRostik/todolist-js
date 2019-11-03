@@ -2,7 +2,7 @@
 https://smrostik.github.io/todolist-js/dist/
 
 Implemented by:
-1. creature;
+1. creation;
 2. removal;
 3. filtering by priority, status and title.
 
